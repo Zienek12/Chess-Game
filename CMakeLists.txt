@@ -1,0 +1,17 @@
+﻿cmake_minimum_required(VERSION 3.10)
+project(Chess LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(MSVC)
+        add_compile_options(/W4)
+    else()
+        add_compile_options(-g -O0 -Wall -Wextra -pedantic)
+    endif()
+else()
+    add_compile_options(-O2)
+endif()
+
+
+add_subdirectory(Chess)
