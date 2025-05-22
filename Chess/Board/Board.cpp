@@ -1,8 +1,10 @@
 #include "Board.h"
 #include "../Pieces/PieceType.h"
+#include "../Pieces/Pawn/Pawn.h"
 #include <sstream>
 #include <cctype>
-
+#include <algorithm>
+#include <vector>
 const Piece& Board::getPiece(const Position& pos)const {
 	if (!pos.isValid())
 	{
@@ -104,11 +106,44 @@ void Board::removePiece(const Position& pos)
 	}
 }
 
+
+
+
+
 void Board::movePiece(const Position& from, const Position& to)
 {
 	if (from.isValid() && to.isValid())
 	{
-		squares[to.x][to.y] = squares[from.x][from.y];
-		removePiece(Position(from.x, from.y));
+		const Piece& piece = getPiece(from);
+		switch (piece.getType())
+		{
+		case PieceType::Pawn:
+		{
+			Pawn pawn(piece.getColor(), piece.hasBeenMoved());
+			std::vector<Position> legalPawnMoves = pawn.getLegalMoves(from, *this);
+			if (std::find(legalPawnMoves.begin(), legalPawnMoves.end(), to) != legalPawnMoves.end())
+			{
+				squares[to.x][to.y] = squares[from.x][from.y];
+				removePiece(from);
+			}
+
+			break;
+		}
+		case PieceType::Rook:
+			break;
+		case PieceType::Knight:
+			break;
+		case PieceType::Bishop:
+			break;
+		case PieceType::Queen:
+			break;
+		case PieceType::King:
+			break;
+		default:
+			break;
+		}
+
+
+
 	}
 }
