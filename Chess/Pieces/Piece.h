@@ -1,11 +1,12 @@
-#pragma
+#pragma once
 #include "PieceType.h"
 #include "Color.h"
-
+#include "Position.h"
+#include <vector>
 
 class Piece
 {
-private:
+protected:
 	PieceType type;
 	Color color;
 	bool hasMoved;
