@@ -8,7 +8,7 @@
 
 class Board
 {
-private:
+protected:
 	std::array<std::array <Piece, 8>, 8> squares;
 	void initializeFromFEN(const std::string& fenString);
 	Piece charToPiece(char c) const;
@@ -20,4 +20,6 @@ public:
 	void placePiece(const Position& pos, const Piece& piece);
 	void clearBoard();
 	void loadFromFEN(const std::string& fenString); 
+	void removePiece(const Position& pos);
+	void movePiece(const Position& from, const Position& to);
 };

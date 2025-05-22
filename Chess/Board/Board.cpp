@@ -93,3 +93,22 @@ Piece Board::charToPiece(char c) const
 
 	return Piece(type, color);
 }
+
+
+
+void Board::removePiece(const Position& pos)
+{
+	if (pos.isValid())
+	{
+		squares[pos.x][pos.y] = Piece(PieceType::None,Color::None);
+	}
+}
+
+void Board::movePiece(const Position& from, const Position& to)
+{
+	if (from.isValid() && to.isValid())
+	{
+		squares[to.x][to.y] = squares[from.x][from.y];
+		removePiece(Position(from.x, from.y));
+	}
+}
