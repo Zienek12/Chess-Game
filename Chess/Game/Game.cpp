@@ -1,5 +1,5 @@
 #include "Game.h"
-
+#include <Windows.h>
 Board Game::initializeGame(const std::string& fen)
 {
 	Board board(fen);
@@ -15,6 +15,6 @@ void Game::gameLoop(Board& board)
 	Positions = inputHandler.translatePlayerMove(move);
 
 	board.movePiece(Positions[0], Positions[1]);
-	
+	system("cls");
 
 }
