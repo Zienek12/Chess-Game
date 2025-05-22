@@ -10,3 +10,7 @@ struct Position
 		return x >= 0 && x < 8 && y >= 0 && y < 8;
 	}
 };
+inline bool operator==(const Position& lhs, const Position& rhs)
+{
+	return lhs.x == rhs.x && lhs.y == rhs.y;
+}
