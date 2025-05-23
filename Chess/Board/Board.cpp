@@ -2,6 +2,8 @@
 #include "../Pieces/PieceType.h"
 #include "../Pieces/Pawn/Pawn.h"
 #include "../Pieces/Knight/Knight.h"
+#include "../Pieces/Rook/Rook.h"
+
 #include <sstream>
 #include <cctype>
 #include <algorithm>
@@ -108,9 +110,6 @@ void Board::removePiece(const Position& pos)
 }
 
 
-
-
-
 void Board::movePiece(const Position& from, const Position& to)
 {
 	if (from.isValid() && to.isValid())
@@ -130,8 +129,16 @@ void Board::movePiece(const Position& from, const Position& to)
 			break;
 		}
 		case PieceType::Rook:
-			// TODO: Implement Rook movement logic
+		{
+			Rook rook(piece.getColor(), piece.hasBeenMoved());
+			std::vector<Position> legalRookMoves = rook.getLegalMoves(from, *this);
+			if (std::find(legalRookMoves.begin(), legalRookMoves.end(), to) != legalRookMoves.end())
+			{
+				squares[to.x][to.y] = squares[from.x][from.y];
+				removePiece(from);
+			}
 			break;
+		}
 		case PieceType::Knight:
 		{
 			Knight knight(piece.getColor(), piece.hasBeenMoved());
@@ -160,4 +167,3 @@ void Board::movePiece(const Position& from, const Position& to)
 		}
 	}
 }
-
