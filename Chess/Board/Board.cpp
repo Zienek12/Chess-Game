@@ -4,6 +4,7 @@
 #include "../Pieces/Knight/Knight.h"
 #include "../Pieces/Rook/Rook.h"
 #include "../Pieces/Bishop/Bishop.h"
+#include "../Pieces/Queen/Queen.h"
 #include <sstream>
 #include <cctype>
 #include <algorithm>
@@ -109,7 +110,6 @@ void Board::removePiece(const Position& pos)
 	}
 }
 
-
 void Board::movePiece(const Position& from, const Position& to)
 {
 	if (from.isValid() && to.isValid())
@@ -162,8 +162,16 @@ void Board::movePiece(const Position& from, const Position& to)
 			break;
 		}
 		case PieceType::Queen:
-			// Placeholder for Queen movement logic
+		{
+			Queen queen(piece.getColor(), piece.hasBeenMoved());
+			std::vector<Position> legalQueenMoves = queen.getLegalMoves(from, *this);
+			if (std::find(legalQueenMoves.begin(), legalQueenMoves.end(), to) != legalQueenMoves.end())
+			{
+				squares[to.x][to.y] = squares[from.x][from.y];
+				removePiece(from);
+			}
 			break;
+		}
 		case PieceType::King:
 			// Placeholder for King movement logic
 			break;
@@ -173,6 +181,5 @@ void Board::movePiece(const Position& from, const Position& to)
 		default:
 			throw std::logic_error("Unhandled PieceType in movePiece");
 		}
-
 	}
 }
