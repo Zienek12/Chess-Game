@@ -1,6 +1,7 @@
 #include "Board.h"
 #include "../Pieces/PieceType.h"
 #include "../Pieces/Pawn/Pawn.h"
+#include "../Pieces/Knight/Knight.h"
 #include <sstream>
 #include <cctype>
 #include <algorithm>
@@ -126,24 +127,37 @@ void Board::movePiece(const Position& from, const Position& to)
 				squares[to.x][to.y] = squares[from.x][from.y];
 				removePiece(from);
 			}
-
 			break;
 		}
 		case PieceType::Rook:
+			// TODO: Implement Rook movement logic
 			break;
 		case PieceType::Knight:
-			break;
-		case PieceType::Bishop:
-			break;
-		case PieceType::Queen:
-			break;
-		case PieceType::King:
-			break;
-		default:
+		{
+			Knight knight(piece.getColor(), piece.hasBeenMoved());
+			std::vector<Position> legalKnightMoves = knight.getLegalMoves(from, *this);
+			if (std::find(legalKnightMoves.begin(), legalKnightMoves.end(), to) != legalKnightMoves.end())
+			{
+				squares[to.x][to.y] = squares[from.x][from.y];
+				removePiece(from);
+			}
 			break;
 		}
-
-
-
+		case PieceType::Bishop:
+			// TODO: Implement Bishop movement logic
+			break;
+		case PieceType::Queen:
+			// TODO: Implement Queen movement logic
+			break;
+		case PieceType::King:
+			// TODO: Implement King movement logic
+			break;
+		case PieceType::None:
+			// No action needed for an empty square
+			break;
+		default:
+			throw std::logic_error("Unhandled PieceType in movePiece");
+		}
 	}
 }
+
