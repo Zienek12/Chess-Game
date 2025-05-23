@@ -27,7 +27,7 @@ std::vector<Position> Rook::getLegalMoves(const Position& pos, const Board& boar
 				{
 					legalMoves.push_back(Position(newX, newY));
 				}
-				break; // nie mo?na przej?? przez inn? figur?
+				break; 
 			}
 			newX += dx[dir];
 			newY += dy[dir];
