@@ -4,6 +4,7 @@
 #include<array>
 #include <string>
 #include <stdexcept>
+#include <map>
 
 
 class Board
@@ -19,7 +20,8 @@ public:
 	const Piece& getPiece(const Position& pos) const;
 	void placePiece(const Position& pos, const Piece& piece);
 	void clearBoard();
-	void loadFromFEN(const std::string& fenString); 
 	void removePiece(const Position& pos);
 	void movePiece(const Position& from, const Position& to);
+	std::map<Position, std::vector<Position>> getAllLegalMoves(Color color) const;
+
 };

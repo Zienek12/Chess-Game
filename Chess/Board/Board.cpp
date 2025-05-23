@@ -18,6 +18,7 @@ const Piece& Board::getPiece(const Position& pos)const {
 	}
 	return squares[pos.x][pos.y];
 }
+
 void Board::placePiece(const Position& pos, const Piece& piece)
 {
 	if (pos.isValid())
@@ -43,9 +44,7 @@ Board::Board(const std::string& fenString)
 	initializeFromFEN(fenString);
 }
 
-void Board::loadFromFEN(const std::string& fenString) {
-	initializeFromFEN(fenString);
-}
+
 
 void Board::initializeFromFEN(const std::string& fenString)
 {
@@ -111,85 +110,92 @@ void Board::removePiece(const Position& pos)
 	}
 }
 
+
+//returns map with position from as a key and vector of position as values to check all legal moves
+//for ordered color
+std::map<Position, std::vector<Position>> Board::getAllLegalMoves(Color color) const
+{
+	std::map<Position, std::vector<Position>> moves;
+	for (int x = 0; x < 8; ++x)
+	{
+		for (int y = 0; y < 8; ++y)
+		{
+			Position from(x, y);
+			const Piece& piece = getPiece(from);
+			if (piece.getColor() != color || piece.getType() == PieceType::None)
+				continue;
+
+			std::vector<Position> legalMoves;
+			switch (piece.getType())
+			{
+			case PieceType::Pawn:
+			{
+				Pawn p(piece.getColor(), piece.hasBeenMoved());
+				legalMoves = p.getLegalMoves(from, *this);
+				break;
+			}
+			case PieceType::Knight:
+			{
+				Knight k(piece.getColor(), piece.hasBeenMoved());
+				legalMoves = k.getLegalMoves(from, *this);
+				break;
+			}
+			case PieceType::Bishop:
+			{
+				Bishop b(piece.getColor(), piece.hasBeenMoved());
+				legalMoves = b.getLegalMoves(from, *this);
+				break;
+			}
+			case PieceType::Rook:
+			{
+				Rook r(piece.getColor(), piece.hasBeenMoved());
+				legalMoves = r.getLegalMoves(from, *this);
+				break;
+			}
+			case PieceType::Queen:
+			{
+				Queen q(piece.getColor(), piece.hasBeenMoved());
+				legalMoves = q.getLegalMoves(from, *this);
+				break;
+			}
+			case PieceType::King:
+			{
+				King k(piece.getColor(), piece.hasBeenMoved());
+				legalMoves = k.getLegalMoves(from, *this);
+				break;
+			}
+			default:
+				break;
+			}
+			if (!legalMoves.empty())
+				moves[from] = legalMoves;
+		}
+	}
+	return moves;
+}
+
+
+//uses map with all legal moves it checs if move that player inputed is in the map
+//if it is move is made
 void Board::movePiece(const Position& from, const Position& to)
 {
-	if (from.isValid() && to.isValid())
-	{
-		const Piece& piece = getPiece(from);
-		switch (piece.getType())
-		{
-		case PieceType::Pawn:
-		{
-			Pawn pawn(piece.getColor(), piece.hasBeenMoved());
-			std::vector<Position> legalPawnMoves = pawn.getLegalMoves(from, *this);
-			if (std::find(legalPawnMoves.begin(), legalPawnMoves.end(), to) != legalPawnMoves.end())
-			{
-				squares[to.x][to.y] = squares[from.x][from.y];
-				removePiece(from);
-			}
-			break;
-		}
-		case PieceType::Rook:
-		{
-			Rook rook(piece.getColor(), piece.hasBeenMoved());
-			std::vector<Position> legalRookMoves = rook.getLegalMoves(from, *this);
-			if (std::find(legalRookMoves.begin(), legalRookMoves.end(), to) != legalRookMoves.end())
-			{
-				squares[to.x][to.y] = squares[from.x][from.y];
-				removePiece(from);
-			}
-			break;
-		}
-		case PieceType::Knight:
-		{
-			Knight knight(piece.getColor(), piece.hasBeenMoved());
-			std::vector<Position> legalKnightMoves = knight.getLegalMoves(from, *this);
-			if (std::find(legalKnightMoves.begin(), legalKnightMoves.end(), to) != legalKnightMoves.end())
-			{
-				squares[to.x][to.y] = squares[from.x][from.y];
-				removePiece(from);
-			}
-			break;
-		}
-		case PieceType::Bishop:
-		{
-			Bishop bishop(piece.getColor(), piece.hasBeenMoved());
-			std::vector<Position> legalBishopMoves = bishop.getLegalMoves(from, *this);
-			if (std::find(legalBishopMoves.begin(), legalBishopMoves.end(), to) != legalBishopMoves.end())
-			{
-				squares[to.x][to.y] = squares[from.x][from.y];
-				removePiece(from);
-			}
-			break;
-		}
-		case PieceType::Queen:
-		{
-			Queen queen(piece.getColor(), piece.hasBeenMoved());
-			std::vector<Position> legalQueenMoves = queen.getLegalMoves(from, *this);
-			if (std::find(legalQueenMoves.begin(), legalQueenMoves.end(), to) != legalQueenMoves.end())
-			{
-				squares[to.x][to.y] = squares[from.x][from.y];
-				removePiece(from);
-			}
-			break;
-		}
-		case PieceType::King:
-		{
-			King king(piece.getColor(), piece.hasBeenMoved());
-			std::vector<Position> legalKingMoves = king.getLegalMoves(from, *this);
-			if (std::find(legalKingMoves.begin(), legalKingMoves.end(), to) != legalKingMoves.end())
-			{
-				squares[to.x][to.y] = squares[from.x][from.y];
-				removePiece(from);
-			}
-			break;
-		}
-		case PieceType::None:
-			// No action needed for an empty square
-			break;
-		default:
-			throw std::logic_error("Unhandled PieceType in movePiece");
-		}
+	if (!from.isValid() || !to.isValid())
+		return;
 
+	const Piece& piece = getPiece(from);
+	if (piece.getType() == PieceType::None)
+		return;
+
+	auto allMoves = getAllLegalMoves(piece.getColor());
+	auto it = allMoves.find(from);
+	if (it != allMoves.end())
+	{
+		const std::vector<Position>& legalMoves = it->second;
+		if (std::find(legalMoves.begin(), legalMoves.end(), to) != legalMoves.end())
+		{
+			squares[to.x][to.y] = squares[from.x][from.y];
+			removePiece(from);
+		}
 	}
 }
+
