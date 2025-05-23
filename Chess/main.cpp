@@ -9,9 +9,9 @@ int main()
 	std::string standardBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	
 	Board board = Game::initializeGame(standardBoard);
-
+	Game game;
 	while (1)
 	{
-		Game::gameLoop(board);
+		game.gameLoop(board);
 	}
 }
