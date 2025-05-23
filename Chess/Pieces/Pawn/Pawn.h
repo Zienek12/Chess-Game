@@ -1,4 +1,3 @@
-#pragma once
 #include "../Piece.h"
 #include "../Position.h"
 #include "../../Board/Board.h"
