@@ -3,7 +3,7 @@
 #include "../Pieces/Pawn/Pawn.h"
 #include "../Pieces/Knight/Knight.h"
 #include "../Pieces/Rook/Rook.h"
-
+#include "../Pieces/Bishop/Bishop.h"
 #include <sstream>
 #include <cctype>
 #include <algorithm>
@@ -151,13 +151,21 @@ void Board::movePiece(const Position& from, const Position& to)
 			break;
 		}
 		case PieceType::Bishop:
-			// TODO: Implement Bishop movement logic
+		{
+			Bishop bishop(piece.getColor(), piece.hasBeenMoved());
+			std::vector<Position> legalBishopMoves = bishop.getLegalMoves(from, *this);
+			if (std::find(legalBishopMoves.begin(), legalBishopMoves.end(), to) != legalBishopMoves.end())
+			{
+				squares[to.x][to.y] = squares[from.x][from.y];
+				removePiece(from);
+			}
 			break;
+		}
 		case PieceType::Queen:
-			// TODO: Implement Queen movement logic
+			// Placeholder for Queen movement logic
 			break;
 		case PieceType::King:
-			// TODO: Implement King movement logic
+			// Placeholder for King movement logic
 			break;
 		case PieceType::None:
 			// No action needed for an empty square
@@ -165,5 +173,6 @@ void Board::movePiece(const Position& from, const Position& to)
 		default:
 			throw std::logic_error("Unhandled PieceType in movePiece");
 		}
+
 	}
 }
