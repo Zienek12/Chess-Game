@@ -5,16 +5,34 @@ Board Game::initializeGame(const std::string& fen)
 	Board board(fen);
 	return board;
 }
+bool Game::isMoveLegal(const Board& board, const Position& from, const Position& to, Color player) const
+{
+	auto legalMoves = board.getAllLegalMoves(player);
+	auto it = legalMoves.find(from);
+	if (it != legalMoves.end()) {
+		const auto& moves = it->second;
+		return std::find(moves.begin(), moves.end(), to) != moves.end();
+	}
+	return false;
+}
+
 void Game::gameLoop(Board& board)
 {
-	ConsoleUi::displayBoard(board);
+    std::cout << "Current player " << currentPlayer << "\n";
+    ConsoleUi::displayBoard(board);
 
-	HandlePlayerInput inputHandler;
-	PlayerMove move = inputHandler.getPlayerMove();
-	std::vector<Position> Positions;
-	Positions = inputHandler.translatePlayerMove(move);
+    HandlePlayerInput inputHandler;
+    PlayerMove move = inputHandler.getPlayerMove();
+    std::vector<Position> Positions = inputHandler.translatePlayerMove(move);
 
-	board.movePiece(Positions[0], Positions[1]);
-	system("cls");
+    if (isMoveLegal(board, Positions[0], Positions[1], currentPlayer)) {
+        board.movePiece(Positions[0], Positions[1]);
+        this->currentPlayer = (this->currentPlayer == Color::White) ? Color::Black : Color::White;
+    }
+    else {
+        std::cout << "Incorrect move try again!\n";
+        system("pause");
+    }
 
+    system("cls");
 }

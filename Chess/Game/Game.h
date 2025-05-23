@@ -6,7 +6,11 @@
 
 class Game
 {
+protected:
+	Color currentPlayer = Color::White;
+	bool isMoveLegal(const Board& board, const Position& from, const Position& to, Color player) const;
+
 public:
 	static Board initializeGame(const std::string& fen);
-	static void gameLoop(Board& board);
+	void gameLoop(Board& board);
 };
