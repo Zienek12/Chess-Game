@@ -199,3 +199,96 @@ void Board::movePiece(const Position& from, const Position& to)
 	}
 }
 
+
+bool Board::isSquareAttacked(const Position& pos, Color color) const
+{
+	Color opponentColor = (color == Color::White) ? Color::Black : Color::White;
+
+	for (int x = 0; x < 8; ++x)
+	{
+		for (int y = 0; y < 8; ++y)
+		{
+			Position from(x, y);
+			const Piece& piece = getPiece(from);
+			if (piece.getType() != PieceType::None && piece.getColor() == opponentColor)
+			{
+				// Pobierz mo?liwe ruchy atakuj?cej bierki
+				std::vector<Position> moves;
+				switch (piece.getType())
+				{
+				case PieceType::Pawn:
+					// Specjalna logika dla bicia pionem
+				{
+					int direction = (opponentColor == Color::White) ? 1 : -1;
+					for (int dx : {-1, 1})
+					{
+						Position attackPos(x + dx, y + direction);
+						if (attackPos.isValid() && attackPos.x == pos.x && attackPos.y == pos.y)
+							return true;
+					}
+				}
+				break;
+				case PieceType::Knight:
+					// Skoczki
+				{
+					const int kx[] = { 1, 2, 2, 1, -1, -2, -2, -1 };
+					const int ky[] = { 2, 1, -1, -2, -2, -1, 1, 2 };
+					for (int i = 0; i < 8; ++i)
+					{
+						Position attackPos(x + kx[i], y + ky[i]);
+						if (attackPos.isValid() && attackPos.x == pos.x && attackPos.y == pos.y)
+							return true;
+					}
+				}
+				break;
+				case PieceType::Bishop:
+				case PieceType::Rook:
+				case PieceType::Queen:
+					// Biskup, wie?a, hetman
+				{
+					static const int directions[8][2] = {
+						{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}
+					};
+					int maxDir = (piece.getType() == PieceType::Bishop) ? 4 :
+						(piece.getType() == PieceType::Rook) ? 4 : 8;
+					int startDir = (piece.getType() == PieceType::Bishop) ? 4 :
+						(piece.getType() == PieceType::Rook) ? 0 : 0;
+					for (int d = startDir; d < startDir + maxDir; ++d)
+					{
+						int nx = x, ny = y;
+						while (true)
+						{
+							nx += directions[d][0];
+							ny += directions[d][1];
+							Position attackPos(nx, ny);
+							if (!attackPos.isValid()) break;
+							if (attackPos.x == pos.x && attackPos.y == pos.y)
+								return true;
+							if (getPiece(attackPos).getType() != PieceType::None)
+								break;
+						}
+					}
+				}
+				break;
+				case PieceType::King:
+					// Król atakuje s?siednie pola
+					for (int dx = -1; dx <= 1; ++dx)
+					{
+						for (int dy = -1; dy <= 1; ++dy)
+						{
+							if (dx == 0 && dy == 0) continue;
+							Position attackPos(x + dx, y + dy);
+							if (attackPos.isValid() && attackPos.x == pos.x && attackPos.y == pos.y)
+								return true;
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+	return false;
+}
+

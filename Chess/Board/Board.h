@@ -15,7 +15,6 @@ protected:
 	Piece charToPiece(char c) const;
 
 public:
-	Board();
 	Board(const std::string& fenString);
 	const Piece& getPiece(const Position& pos) const;
 	void placePiece(const Position& pos, const Piece& piece);
@@ -23,5 +22,5 @@ public:
 	void removePiece(const Position& pos);
 	void movePiece(const Position& from, const Position& to);
 	std::map<Position, std::vector<Position>> getAllLegalMoves(Color color) const;
-
+	bool isSquareAttacked(const Position& pos, Color color) const;
 };
