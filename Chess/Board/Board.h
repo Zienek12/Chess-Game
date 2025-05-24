@@ -9,6 +9,9 @@
 
 class Board
 {
+private:
+	void makeMoveNoValidation(const Position& from, const Position& to);
+
 protected:
 	std::array<std::array <Piece, 8>, 8> squares;
 	void initializeFromFEN(const std::string& fenString);

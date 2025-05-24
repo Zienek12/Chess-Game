@@ -167,11 +167,32 @@ std::map<Position, std::vector<Position>> Board::getAllLegalMoves(Color color) c
 			default:
 				break;
 			}
-			if (!legalMoves.empty())
-				moves[from] = legalMoves;
+
+
+			std::vector<Position> trulyLegalMoves;
+			for (const Position& to : legalMoves)
+			{
+				Board boardCopy = *this;
+				boardCopy.makeMoveNoValidation(from, to);
+				if (!boardCopy.isKingInCheck(color))
+				{
+					trulyLegalMoves.push_back(to);
+				}
+			}
+
+			if (!trulyLegalMoves.empty())
+				moves[from] = trulyLegalMoves;
 		}
 	}
 	return moves;
+}
+
+void Board::makeMoveNoValidation(const Position& from, const Position& to)
+{
+	if (!from.isValid() || !to.isValid())
+		return;
+	squares[to.x][to.y] = squares[from.x][from.y];
+	removePiece(from);
 }
 
 
