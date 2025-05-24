@@ -11,8 +11,15 @@ bool Game::isMoveLegal(const Board& board, const Position& from, const Position&
 	auto it = legalMoves.find(from);
 	if (it != legalMoves.end()) {
 		const auto& moves = it->second;
-		return std::find(moves.begin(), moves.end(), to) != moves.end();
-	}
+        if (std::find(moves.begin(), moves.end(), to) != moves.end()) {
+            //simulating move on temporary board
+            Board tempBoard = board;
+            tempBoard.movePiece(from, to);
+            if (!tempBoard.isKingInCheck(player)) {
+                return true;
+            }
+        }
+    }
 	return false;
 }
 
