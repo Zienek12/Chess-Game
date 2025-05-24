@@ -212,12 +212,10 @@ bool Board::isSquareAttacked(const Position& pos, Color color) const
 			const Piece& piece = getPiece(from);
 			if (piece.getType() != PieceType::None && piece.getColor() == opponentColor)
 			{
-				// Pobierz mo?liwe ruchy atakuj?cej bierki
 				std::vector<Position> moves;
 				switch (piece.getType())
 				{
 				case PieceType::Pawn:
-					// Specjalna logika dla bicia pionem
 				{
 					int direction = (opponentColor == Color::White) ? 1 : -1;
 					for (int dx : {-1, 1})
@@ -229,7 +227,6 @@ bool Board::isSquareAttacked(const Position& pos, Color color) const
 				}
 				break;
 				case PieceType::Knight:
-					// Skoczki
 				{
 					const int kx[] = { 1, 2, 2, 1, -1, -2, -2, -1 };
 					const int ky[] = { 2, 1, -1, -2, -2, -1, 1, 2 };
@@ -244,7 +241,6 @@ bool Board::isSquareAttacked(const Position& pos, Color color) const
 				case PieceType::Bishop:
 				case PieceType::Rook:
 				case PieceType::Queen:
-					// Biskup, wie?a, hetman
 				{
 					static const int directions[8][2] = {
 						{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}
@@ -271,7 +267,6 @@ bool Board::isSquareAttacked(const Position& pos, Color color) const
 				}
 				break;
 				case PieceType::King:
-					// Król atakuje s?siednie pola
 					for (int dx = -1; dx <= 1; ++dx)
 					{
 						for (int dy = -1; dy <= 1; ++dy)
@@ -292,3 +287,21 @@ bool Board::isSquareAttacked(const Position& pos, Color color) const
 	return false;
 }
 
+Position Board::findKingPos(Color player) const
+{
+	for (int x = 0; x < 8; ++x)
+	{
+		for (int y = 0; y < 8; ++y)
+		{
+			if (getPiece(Position(x, y)).getType() == PieceType::King && getPiece(Position(x, y)).getColor() == player)
+			{
+				return(Position(x, y));
+			}
+		}
+	}
+	return Position(-1, -1);
+}
+bool Board::isKingInCheck(Color player) const
+{
+	return isSquareAttacked(findKingPos(player), player);
+}

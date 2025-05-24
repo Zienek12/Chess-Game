@@ -23,4 +23,7 @@ public:
 	void movePiece(const Position& from, const Position& to);
 	std::map<Position, std::vector<Position>> getAllLegalMoves(Color color) const;
 	bool isSquareAttacked(const Position& pos, Color color) const;
+
+	Position findKingPos(Color player) const;
+	bool isKingInCheck(Color color) const;
 };
