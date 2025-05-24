@@ -305,3 +305,48 @@ bool Board::isKingInCheck(Color player) const
 {
 	return isSquareAttacked(findKingPos(player), player);
 }
+
+bool Board::isInsufficientMaterial() const
+{
+	int whiteBishops = 0, blackBishops = 0, whiteKnights = 0, blackKnights = 0;
+	int whiteOther = 0, blackOther = 0, whitePawns = 0, blackPawns = 0;
+	for (int x = 0; x < 8; ++x) {
+		for (int y = 0; y < 8; ++y) {
+			const Piece& p = squares[x][y];
+			if (p.getType() == PieceType::None || p.getType() == PieceType::King)
+				continue;
+			if (p.getType() == PieceType::Pawn) {
+				if (p.getColor() == Color::White) whitePawns++;
+				else blackPawns++;
+			}
+			else if (p.getType() == PieceType::Bishop) {
+				if (p.getColor() == Color::White) whiteBishops++;
+				else blackBishops++;
+			}
+			else if (p.getType() == PieceType::Knight) {
+				if (p.getColor() == Color::White) whiteKnights++;
+				else blackKnights++;
+			}
+			else {
+				if (p.getColor() == Color::White) whiteOther++;
+				else blackOther++;
+			}
+		}
+	}
+	// Only kings
+	if (whiteBishops + blackBishops + whiteKnights + blackKnights + whiteOther + blackOther + whitePawns + blackPawns == 0)
+		return true;
+	// King and one knight or king and bishop
+	if (whiteOther + blackOther + whitePawns + blackPawns > 0)
+		return false;
+	if ((whiteBishops + whiteKnights == 1 && blackBishops + blackKnights == 0) ||
+		(blackBishops + blackKnights == 1 && whiteBishops + whiteKnights == 0))
+		return true;
+	// king and bishop vs king and bishop of the same color
+	if (whiteOther + blackOther + whitePawns + blackPawns == 0 &&
+		whiteBishops == 1 && blackBishops == 1) {
+	
+		return true;
+	}
+	return false;
+}

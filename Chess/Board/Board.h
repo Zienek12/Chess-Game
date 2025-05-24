@@ -26,4 +26,6 @@ public:
 
 	Position findKingPos(Color player) const;
 	bool isKingInCheck(Color color) const;
+
+	bool isInsufficientMaterial() const;
 };

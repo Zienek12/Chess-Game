@@ -22,11 +22,28 @@ bool Game::isMoveLegal(const Board& board, const Position& from, const Position&
     }
 	return false;
 }
-
 void Game::gameLoop(Board& board)
 {
     std::cout << "Current player " << currentPlayer << "\n";
     ConsoleUi::displayBoard(board);
+
+    if (board.isKingInCheck(currentPlayer) &&
+        board.getAllLegalMoves(currentPlayer).empty()) {
+        std::cout << "Check mate " << (currentPlayer == Color::White ? "Black" : "White") << " Wins\n";
+        system("pause");
+        exit(0); 
+    }
+    if (!board.isKingInCheck(currentPlayer) &&
+        board.getAllLegalMoves(currentPlayer).empty()) {
+        std::cout << "Stalemate! Draw.\n";
+        system("pause");
+        exit(0);
+    }
+    if (board.isInsufficientMaterial()) {
+        std::cout << "Draw! Insufficient material.\n";
+        system("pause");
+        exit(0);
+    }
 
     HandlePlayerInput inputHandler;
     PlayerMove move = inputHandler.getPlayerMove();
