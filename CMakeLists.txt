@@ -6,6 +6,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(MSVC)
         add_compile_options(/W4)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
+
     else()
         add_compile_options(-g -O0 -Wall -Wextra -pedantic)
     endif()
