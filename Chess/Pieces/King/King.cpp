@@ -1,8 +1,8 @@
 #include "King.h"
 
-std::vector<Position> King::getLegalMoves(const Position& pos, const Board& board)
+std::vector<Move> King::getLegalMoves(const Position& pos, const Board& board)
 {
-    std::vector<Position> legalMoves;
+    std::vector<Move> legalMoves;
     const Piece& currentPiece = board.getPiece(pos);
 
     const int dx[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -21,7 +21,7 @@ std::vector<Position> King::getLegalMoves(const Position& pos, const Board& boar
             {
                 if (!board.isSquareAttacked(newPos, currentPiece.getColor()))
                 {
-                    legalMoves.push_back(newPos);
+                    legalMoves.push_back(Move(pos,newPos));
                 }
             }
         }
@@ -42,7 +42,7 @@ std::vector<Position> King::getLegalMoves(const Position& pos, const Board& boar
             const Piece& rook = board.getPiece(Position(7, y));
             if (rook.getType() == PieceType::Rook && !rook.hasBeenMoved() && rook.getColor() == currentPiece.getColor())
             {
-                legalMoves.push_back(Position(6, y)); 
+                legalMoves.push_back(Move(pos,Position(6, y))); 
             }
         }
 
@@ -58,7 +58,7 @@ std::vector<Position> King::getLegalMoves(const Position& pos, const Board& boar
             const Piece& rook = board.getPiece(Position(0, y));
             if (rook.getType() == PieceType::Rook && !rook.hasBeenMoved() && rook.getColor() == currentPiece.getColor())
             {
-                legalMoves.push_back(Position(2, y)); 
+                legalMoves.push_back(Move(pos,Position(2, y))); 
             }
         }
     }

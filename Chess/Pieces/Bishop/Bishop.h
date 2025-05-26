@@ -2,10 +2,11 @@
 #include "../Piece.h"
 #include "../Position.h"
 #include "../../Board/Board.h"
+#include "../Move.h"
 
 class Bishop : public Piece
 {
 public:
 	Bishop(Color color, bool hasMoved = false) : Piece(PieceType::Bishop, color, hasMoved) {}
-	std::vector<Position> getLegalMoves(const Position& pos, const Board& board);
+	std::vector<Move> getLegalMoves(const Position& pos, const Board& board);
 };

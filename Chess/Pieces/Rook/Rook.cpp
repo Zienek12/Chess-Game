@@ -1,8 +1,8 @@
 #include "Rook.h"
 
-std::vector<Position> Rook::getLegalMoves(const Position& pos, const Board& board)
+std::vector<Move> Rook::getLegalMoves(const Position& pos, const Board& board)
 {
-	std::vector<Position> legalMoves;
+	std::vector<Move> legalMoves;
 
 	const Piece& currentPiece = board.getPiece(pos);
 
@@ -19,13 +19,13 @@ std::vector<Position> Rook::getLegalMoves(const Position& pos, const Board& boar
 
 			if (targetPiece.getType() == PieceType::None)
 			{
-				legalMoves.push_back(Position(newX, newY));
+				legalMoves.push_back(Move(pos,Position(newX, newY)));
 			}
 			else
 			{
 				if (targetPiece.getColor() != currentPiece.getColor())
 				{
-					legalMoves.push_back(Position(newX, newY));
+					legalMoves.push_back(Move(pos,Position(newX, newY)));
 				}
 				break; 
 			}

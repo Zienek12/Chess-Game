@@ -1,8 +1,8 @@
 #include "Knight.h"
 
-std::vector<Position> Knight::getLegalMoves(const Position& pos, const Board& board)
+std::vector<Move> Knight::getLegalMoves(const Position& pos, const Board& board)
 {
-    std::vector<Position> legalMoves;
+    std::vector<Move> legalMoves;
     static const std::vector<std::pair<int, int>> moves = {
       {2, 1}, {1, 2}, {-1, 2}, {-2, 1},
       {-2, -1}, {-1, -2}, {1, -2}, {2, -1}
@@ -20,7 +20,7 @@ std::vector<Position> Knight::getLegalMoves(const Position& pos, const Board& bo
             const Piece& targetPiece = board.getPiece(newPos);
             if (targetPiece.getType() == PieceType::None || targetPiece.getColor() != currentPiece.getColor())
             {
-                legalMoves.push_back(newPos);
+                legalMoves.push_back(Move(pos,newPos));
             }
         }
     }
