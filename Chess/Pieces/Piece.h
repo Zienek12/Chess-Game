@@ -18,4 +18,7 @@ public:
 	PieceType getType() const { return type; }
 	Color getColor() const { return color; }
 	bool hasBeenMoved() const { return hasMoved; }
+
+	void setHasMoved(bool moved) { hasMoved = moved; }
+
 };

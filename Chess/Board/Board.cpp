@@ -38,13 +38,10 @@ void Board::clearBoard()
 	}
 }
 
-
 Board::Board(const std::string& fenString)
 {
 	initializeFromFEN(fenString);
 }
-
-
 
 void Board::initializeFromFEN(const std::string& fenString)
 {
@@ -100,8 +97,6 @@ Piece Board::charToPiece(char c) const
 	return Piece(type, color);
 }
 
-
-
 void Board::removePiece(const Position& pos)
 {
 	if (pos.isValid())
@@ -109,7 +104,6 @@ void Board::removePiece(const Position& pos)
 		squares[pos.x][pos.y] = Piece(PieceType::None,Color::None);
 	}
 }
-
 
 //returns map with position from as a key and vector of position as values to check all legal moves
 //for ordered color
@@ -214,7 +208,29 @@ void Board::movePiece(const Position& from, const Position& to)
 		const std::vector<Position>& legalMoves = it->second;
 		if (std::find(legalMoves.begin(), legalMoves.end(), to) != legalMoves.end())
 		{
+			// Castling
+			if (piece.getType() == PieceType::King && std::abs(to.x-from.x) == 2)
+			{
+				int y = from.y;
+				// King side castle
+				if (to.x > from.x)
+				{
+					squares[5][y] = squares[7][y];
+					squares[7][y].setHasMoved(true);
+					removePiece(Position(7, y));
+				}
+				// Queen side castle
+				else if (to.x < from.x)
+				{
+					squares[3][y] = squares[0][y];
+					squares[0][y].setHasMoved(true);
+					removePiece(Position(0, y));
+				}
+			}
+
+
 			squares[to.x][to.y] = squares[from.x][from.y];
+			squares[to.x][to.y].setHasMoved(true);
 			removePiece(from);
 		}
 	}

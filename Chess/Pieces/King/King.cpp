@@ -26,5 +26,44 @@ std::vector<Position> King::getLegalMoves(const Position& pos, const Board& boar
             }
         }
     }
+    if (!this->hasBeenMoved() && !board.isKingInCheck(this->getColor()))
+    {
+        int y = (currentPiece.getColor() == Color::White) ? 0 : 7;
+
+
+        //king side castle
+        if (
+            board.getPiece(Position(5, y)).getType() == PieceType::None &&
+            board.getPiece(Position(6, y)).getType() == PieceType::None &&
+            !board.isSquareAttacked(Position(5, y), currentPiece.getColor()) &&
+            !board.isSquareAttacked(Position(6, y), currentPiece.getColor())
+            )
+        {
+            const Piece& rook = board.getPiece(Position(7, y));
+            if (rook.getType() == PieceType::Rook && !rook.hasBeenMoved() && rook.getColor() == currentPiece.getColor())
+            {
+                legalMoves.push_back(Position(6, y)); 
+            }
+        }
+
+    //queen side castle
+        if (
+            board.getPiece(Position(1, y)).getType() == PieceType::None &&
+            board.getPiece(Position(2, y)).getType() == PieceType::None &&
+            board.getPiece(Position(3, y)).getType() == PieceType::None &&
+            !board.isSquareAttacked(Position(2, y), currentPiece.getColor()) &&
+            !board.isSquareAttacked(Position(3, y), currentPiece.getColor())
+            )
+        {
+            const Piece& rook = board.getPiece(Position(0, y));
+            if (rook.getType() == PieceType::Rook && !rook.hasBeenMoved() && rook.getColor() == currentPiece.getColor())
+            {
+                legalMoves.push_back(Position(2, y)); 
+            }
+        }
+    }
+    
+
+
     return legalMoves;
 }
