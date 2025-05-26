@@ -2,6 +2,7 @@
 #include "../Pieces/PieceType.h"
 #include "../Pieces/Color.h"
 #include <map>
+#include <limits>
 
 namespace {
     const std::map<std::pair<PieceType, Color>, char> pieceSymbols = {
@@ -20,7 +21,9 @@ namespace {
     };
 }
 
-void ConsoleUi::displayBoard(const Board& board) {
+void ConsoleUi::displayBoard(const Board& board, Color player) {
+   
+    std::cout << "Current player " << player << "\n";
     std::cout << "  a b c d e f g h\n";
     for (int y = 7; y >= 0; --y) {
         std::cout << (y + 1) << " ";
@@ -39,4 +42,30 @@ void ConsoleUi::displayBoard(const Board& board) {
         std::cout << (y + 1) << "\n";
     }
     std::cout << "  a b c d e f g h\n";
+}
+
+
+PieceType ConsoleUi::askPromotionChoice() {
+    std::cout << "Promocja pionka! Wybierz figurę:\n";
+    std::cout << "1. Hetman (Q)\n";
+    std::cout << "2. Wieza (R)\n";
+    std::cout << "3. Goniec (B)\n";
+    std::cout << "4. Skoczek (N)\n";
+    int choice = 0;
+    while (choice < 1 || choice > 4) {
+        std::cout << "Twoj wybor (1-4): ";
+        std::cin >> choice;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            choice = 0;
+        }
+    }
+    switch (choice) {
+    case 1: return PieceType::Queen;
+    case 2: return PieceType::Rook;
+    case 3: return PieceType::Bishop;
+    case 4: return PieceType::Knight;
+    default: return PieceType::Queen;
+    }
 }
