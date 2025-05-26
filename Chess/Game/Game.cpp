@@ -1,56 +1,74 @@
 #include "Game.h"
 #include <Windows.h>
+#include <algorithm>
 Board Game::initializeGame(const std::string& fen)
 {
 	Board board(fen);
 	return board;
 }
-bool Game::isMoveLegal(const Board& board, const Position& from, const Position& to, Color player) const
+bool Game::isMoveLegal(const Board& board, const Position& from, const Position& to, Color player, PieceType promotionType) const
 {
-	auto legalMoves = board.getAllLegalMoves(player);
-	auto it = legalMoves.find(from);
-	if (it != legalMoves.end()) {
-		const auto& moves = it->second;
-        if (std::find(moves.begin(), moves.end(), to) != moves.end()) {
-            //simulating move on temporary board
-            Board tempBoard = board;
-            tempBoard.movePiece(from, to);
-            if (!tempBoard.isKingInCheck(player)) {
-                return true;
-            }
-        }
+    auto legalMoves = board.getAllLegalMoves(player);
+    auto it = legalMoves.find(from);
+    if (it != legalMoves.end()) {
+        const auto& moves = it->second;
+        return std::any_of(moves.begin(), moves.end(), [&](const Move& m) {
+            return m.to == to && m.promotionType == promotionType;
+            });
     }
-	return false;
+    return false;
 }
-void Game::gameLoop(Board& board)
+
+bool Game::isGameCompleted(const Board& board, Color player) const
 {
-    std::cout << "Current player " << currentPlayer << "\n";
-    ConsoleUi::displayBoard(board);
 
     if (board.isKingInCheck(currentPlayer) &&
         board.getAllLegalMoves(currentPlayer).empty()) {
         std::cout << "Check mate " << (currentPlayer == Color::White ? "Black" : "White") << " Wins\n";
         system("pause");
-        exit(0); 
+        return 1;
     }
     if (!board.isKingInCheck(currentPlayer) &&
         board.getAllLegalMoves(currentPlayer).empty()) {
         std::cout << "Stalemate! Draw.\n";
         system("pause");
-        exit(0);
+        return 1;
     }
     if (board.isInsufficientMaterial()) {
         std::cout << "Draw! Insufficient material.\n";
         system("pause");
-        exit(0);
+        return 1;
     }
+    return 0;
+}
+
+
+void Game::gameLoop(Board& board)
+{
+    ConsoleUi console;
+
+    console.displayBoard(board, currentPlayer);
+    if (isGameCompleted(board, currentPlayer))
+        exit(0);
 
     HandlePlayerInput inputHandler;
     PlayerMove move = inputHandler.getPlayerMove();
     std::vector<Position> Positions = inputHandler.translatePlayerMove(move);
 
-    if (isMoveLegal(board, Positions[0], Positions[1], currentPlayer)) {
-        board.movePiece(Positions[0], Positions[1]);
+    Piece movedPiece = board.getPiece(Positions[0]);
+    bool isPromotion = (movedPiece.getType() == PieceType::Pawn) &&
+        ((movedPiece.getColor() == Color::White && Positions[1].y == 7) ||
+            (movedPiece.getColor() == Color::Black && Positions[1].y == 0));
+
+    PieceType promotionType = PieceType::None;
+
+    if (isPromotion) {
+
+        promotionType = console.askPromotionChoice();
+    }
+
+    if (isMoveLegal(board, Positions[0], Positions[1], currentPlayer, promotionType)) {
+        board.movePiece(Move(Positions[0], Positions[1], promotionType));
         this->currentPlayer = (this->currentPlayer == Color::White) ? Color::Black : Color::White;
     }
     else {

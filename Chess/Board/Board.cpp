@@ -107,9 +107,9 @@ void Board::removePiece(const Position& pos)
 
 //returns map with position from as a key and vector of position as values to check all legal moves
 //for ordered color
-std::map<Position, std::vector<Position>> Board::getAllLegalMoves(Color color) const
+std::map<Position, std::vector<Move>> Board::getAllLegalMoves(Color color) const
 {
-	std::map<Position, std::vector<Position>> moves;
+	std::map<Position, std::vector<Move>> moves;
 	for (int x = 0; x < 8; ++x)
 	{
 		for (int y = 0; y < 8; ++y)
@@ -119,7 +119,7 @@ std::map<Position, std::vector<Position>> Board::getAllLegalMoves(Color color) c
 			if (piece.getColor() != color || piece.getType() == PieceType::None)
 				continue;
 
-			std::vector<Position> legalMoves;
+			std::vector<Move> legalMoves;
 			switch (piece.getType())
 			{
 			case PieceType::Pawn:
@@ -162,15 +162,14 @@ std::map<Position, std::vector<Position>> Board::getAllLegalMoves(Color color) c
 				break;
 			}
 
-
-			std::vector<Position> trulyLegalMoves;
-			for (const Position& to : legalMoves)
+			std::vector<Move> trulyLegalMoves;
+			for (const Move& move : legalMoves)
 			{
 				Board boardCopy = *this;
-				boardCopy.makeMoveNoValidation(from, to);
+				boardCopy.makeMoveNoValidation(from, move.to);
 				if (!boardCopy.isKingInCheck(color))
 				{
-					trulyLegalMoves.push_back(to);
+					trulyLegalMoves.push_back(move);
 				}
 			}
 
@@ -189,38 +188,42 @@ void Board::makeMoveNoValidation(const Position& from, const Position& to)
 	removePiece(from);
 }
 
-
 //uses map with all legal moves it checs if move that player inputed is in the map
 //if it is move is made
-void Board::movePiece(const Position& from, const Position& to)
+void Board::movePiece(const Move& move)
 {
-	if (!from.isValid() || !to.isValid())
+	if (!move.from.isValid() || !move.to.isValid())
 		return;
 
-	const Piece& piece = getPiece(from);
+	const Piece& piece = getPiece(move.from);
 	if (piece.getType() == PieceType::None)
 		return;
 
 	auto allMoves = getAllLegalMoves(piece.getColor());
-	auto it = allMoves.find(from);
+	auto it = allMoves.find(move.from);
 	if (it != allMoves.end())
 	{
-		const std::vector<Position>& legalMoves = it->second;
-		if (std::find(legalMoves.begin(), legalMoves.end(), to) != legalMoves.end())
+		const std::vector<Move>& legalMoves = it->second;
+		// Sprawd?, czy ruch jest legalny (uwzgl?dniaj?c promocj?)
+		auto found = std::find_if(legalMoves.begin(), legalMoves.end(),
+			[&move](const Move& m) {
+				return m.to.x == move.to.x && m.to.y == move.to.y && m.promotionType == move.promotionType;
+			});
+		if (found != legalMoves.end())
 		{
-			// Castling
-			if (piece.getType() == PieceType::King && std::abs(to.x-from.x) == 2)
+			// Roszada
+			if (piece.getType() == PieceType::King && std::abs(move.to.x - move.from.x) == 2)
 			{
-				int y = from.y;
-				// King side castle
-				if (to.x > from.x)
+				int y = move.from.y;
+				// Roszada krótka
+				if (move.to.x > move.from.x)
 				{
 					squares[5][y] = squares[7][y];
 					squares[7][y].setHasMoved(true);
 					removePiece(Position(7, y));
 				}
-				// Queen side castle
-				else if (to.x < from.x)
+				// Roszada d?uga
+				else if (move.to.x < move.from.x)
 				{
 					squares[3][y] = squares[0][y];
 					squares[0][y].setHasMoved(true);
@@ -228,14 +231,19 @@ void Board::movePiece(const Position& from, const Position& to)
 				}
 			}
 
+			if (piece.getType() == PieceType::Pawn && move.promotionType != PieceType::None)
+			{
+				squares[move.to.x][move.to.y] = Piece(move.promotionType, piece.getColor(), true);
+				removePiece(move.from);
+				return;
+			}
 
-			squares[to.x][to.y] = squares[from.x][from.y];
-			squares[to.x][to.y].setHasMoved(true);
-			removePiece(from);
+			squares[move.to.x][move.to.y] = squares[move.from.x][move.from.y];
+			squares[move.to.x][move.to.y].setHasMoved(true);
+			removePiece(move.from);
 		}
 	}
 }
-
 
 bool Board::isSquareAttacked(const Position& pos, Color color) const
 {
@@ -338,6 +346,7 @@ Position Board::findKingPos(Color player) const
 	}
 	return Position(-1, -1);
 }
+
 bool Board::isKingInCheck(Color player) const
 {
 	return isSquareAttacked(findKingPos(player), player);

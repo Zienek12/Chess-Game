@@ -5,6 +5,7 @@
 #include <string>
 #include <stdexcept>
 #include <map>
+#include "../Pieces/Move.h"
 
 
 class Board
@@ -23,8 +24,8 @@ public:
 	void placePiece(const Position& pos, const Piece& piece);
 	void clearBoard();
 	void removePiece(const Position& pos);
-	void movePiece(const Position& from, const Position& to);
-	std::map<Position, std::vector<Position>> getAllLegalMoves(Color color) const;
+	void movePiece(const Move& move);
+	std::map<Position, std::vector<Move>> getAllLegalMoves(Color color) const;
 	bool isSquareAttacked(const Position& pos, Color color) const;
 
 	Position findKingPos(Color player) const;
