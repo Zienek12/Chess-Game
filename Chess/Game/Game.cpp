@@ -1,10 +1,12 @@
 #include "Game.h"
-#include <Windows.h>
-#include <algorithm>
+
 Board Game::initializeGame(const std::string& fen)
 {
 	Board board(fen);
-	return board;
+    ConsoleUi console;
+    this->playerColor = console.askPlayerColor();
+    this->aiColor = (playerColor == Color::White) ? Color::Black : Color::White;
+    return board;
 }
 bool Game::isMoveLegal(const Board& board, const Position& from, const Position& to, Color player, PieceType promotionType) const
 {
@@ -19,7 +21,7 @@ bool Game::isMoveLegal(const Board& board, const Position& from, const Position&
     return false;
 }
 
-bool Game::isGameCompleted(const Board& board, Color player) const
+bool Game::isGameCompleted(const Board& board) const
 {
 
     if (board.isKingInCheck(currentPlayer) &&
@@ -46,11 +48,40 @@ bool Game::isGameCompleted(const Board& board, Color player) const
 void Game::gameLoop(Board& board)
 {
     ConsoleUi console;
-
+    ChessEngine engine;
     console.displayBoard(board, currentPlayer);
-    if (isGameCompleted(board, currentPlayer))
+    if (isGameCompleted(board))
+    { 
+        std::cout << "\n" << counter;
         exit(0);
+    }
+    //Ai move
+    if (currentPlayer == aiColor) {
+        engine.makeRandomMove(board, aiColor);
+        currentPlayer = playerColor;
+        std::cout << "\n" << counter;
+        counter++;
 
+        system("cls");
+        return;
+    }
+
+    //To watch how computer vs computer plays
+    //Comment player move section if this is wanted
+    
+    if (currentPlayer == playerColor) {
+        engine.makeRandomMove(board, playerColor);
+        currentPlayer = aiColor;
+        std::cout << "\n" << counter;
+        counter++;
+
+        system("cls");
+        return;
+    }
+    
+
+    /*
+    //player move
     HandlePlayerInput inputHandler;
     PlayerMove move = inputHandler.getPlayerMove();
     std::vector<Position> Positions = inputHandler.translatePlayerMove(move);
@@ -75,6 +106,8 @@ void Game::gameLoop(Board& board)
         std::cout << "Incorrect move try again!\n";
         system("pause");
     }
-
+    
     system("cls");
+    */
+
 }
