@@ -14,11 +14,11 @@ private:
 	void makeMoveNoValidation(const Position& from, const Position& to);
 
 protected:
-	std::array<std::array <Piece, 8>, 8> squares;
 	void initializeFromFEN(const std::string& fenString);
 	Piece charToPiece(char c) const;
 
 public:
+	std::array<std::array <Piece, 8>, 8> squares;
 	Board(const std::string& fenString);
 	const Piece& getPiece(const Position& pos) const;
 	void placePiece(const Position& pos, const Piece& piece);
