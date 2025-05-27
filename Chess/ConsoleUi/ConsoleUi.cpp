@@ -1,9 +1,7 @@
 ﻿#include "ConsoleUI.h"
-#include "../Pieces/PieceType.h"
-#include "../Pieces/Color.h"
 #include <map>
 #include <limits>
-
+#undef max
 namespace {
     const std::map<std::pair<PieceType, Color>, char> pieceSymbols = {
         {{PieceType::Pawn, Color::White},   'P'},
@@ -67,5 +65,27 @@ PieceType ConsoleUi::askPromotionChoice() {
     case 3: return PieceType::Bishop;
     case 4: return PieceType::Knight;
     default: return PieceType::Queen;
+    }
+}
+
+Color ConsoleUi::askPlayerColor()
+{
+    std::cout << "Choose color you want to play with: \n";
+    std::cout << "1. White\n2. Black";
+    int choice = 0;
+    while (choice < 1 || choice > 2)
+    {
+        std::cin >> choice;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            choice = 0;
+        }
+    }
+    switch (choice)
+    {
+    case 1: return Color::White;
+    case 2: return Color::Black;
+    default: return Color::White;
     }
 }
