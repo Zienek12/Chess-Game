@@ -44,14 +44,14 @@ void ConsoleUi::displayBoard(const Board& board, Color player) {
 
 
 PieceType ConsoleUi::askPromotionChoice() {
-    std::cout << "Promocja pionka! Wybierz figurę:\n";
-    std::cout << "1. Hetman (Q)\n";
-    std::cout << "2. Wieza (R)\n";
-    std::cout << "3. Goniec (B)\n";
-    std::cout << "4. Skoczek (N)\n";
+    std::cout << "Pawn promotion! Choose piece:\n";
+    std::cout << "1. Queen (Q)\n";
+    std::cout << "2. Rook (R)\n";
+    std::cout << "3. Bishop (B)\n";
+    std::cout << "4. Knight (N)\n";
     int choice = 0;
     while (choice < 1 || choice > 4) {
-        std::cout << "Twoj wybor (1-4): ";
+        std::cout << "Your choice (1-4): ";
         std::cin >> choice;
         if (std::cin.fail()) {
             std::cin.clear();
