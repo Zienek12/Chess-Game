@@ -2,9 +2,9 @@
 enum class PieceType {
 	None,
 	Pawn,
-	Rook,
-	Bishop,
 	Knight,
+	Bishop,
+	Rook,
 	Queen,
 	King
 };
