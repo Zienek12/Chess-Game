@@ -57,10 +57,12 @@ void Game::gameLoop(Board& board)
     }
     //Ai move
     if (currentPlayer == aiColor) {
-        engine.makeRandomMove(board, aiColor);
+        board.movePiece(engine.findBestMove(board, 3, aiColor));
         currentPlayer = playerColor;
-        std::cout << "\n" << counter;
+        std::cout << "\n" << counter<<"\n";
         counter++;
+        std::cout << engine.evaluateBoard(board) << "\n";
+        Sleep(1000);
 
         system("cls");
         return;
@@ -70,10 +72,12 @@ void Game::gameLoop(Board& board)
     //Comment player move section if this is wanted
     
     if (currentPlayer == playerColor) {
-        engine.makeRandomMove(board, playerColor);
+        board.movePiece(engine.findBestMove(board, 3, playerColor));
         currentPlayer = aiColor;
-        std::cout << "\n" << counter;
+        std::cout << "\n" << counter << "\n";
         counter++;
+        std::cout << engine.evaluateBoard(board) << "\n";
+        Sleep(1000);
 
         system("cls");
         return;
