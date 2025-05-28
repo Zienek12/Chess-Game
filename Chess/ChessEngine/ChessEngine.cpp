@@ -70,3 +70,86 @@ float ChessEngine::evaluateBoard(const Board& board) const
     }
     return score;
 }
+
+float ChessEngine::minimax(Board& board, int depth, Color player)
+{
+    if (depth == 0) {
+        return evaluateBoard(board);
+    }
+    std::map<Position, std::vector<Move>> legalMoves = board.getAllLegalMoves(player);
+
+    if (legalMoves.empty()) {
+        if (board.isKingInCheck(player)) {
+            // Mate
+            return (player == Color::White) ? -100000.0f : 100000.0f;
+        }
+        else {
+            // stalemate
+            return 0.0f;
+        }
+    }
+
+    float bestEval = (player == Color::White) ? -100000.0f : 100000.0f;
+
+    for (const auto& entry : legalMoves)
+    {
+        for (const Move& move : entry.second)
+        {
+            // Zapisz stan przed ruchem
+            MoveState prevState = board.saveStateBeforeMove(move);
+
+            // Wykonaj ruch
+            board.movePiece(move);
+
+            float eval = minimax(board, depth - 1,
+                (player == Color::White ? Color::Black : Color::White));
+
+            // Cofnij ruch
+            board.restoreStateBeforeMove(prevState);
+
+            if (player == Color::White)
+            {
+                if (eval > bestEval) bestEval = eval;
+            }
+            else
+            {
+                if (eval < bestEval) bestEval = eval;
+            }
+        }
+    }
+    return bestEval;
+}
+
+Move ChessEngine::findBestMove(Board& board, int depth, Color player) {
+    std::map<Position, std::vector<Move>> legalMoves = board.getAllLegalMoves(player);
+    if (legalMoves.empty()) {
+        return Move(); // No available moves draw or checkmate
+    }
+    Move bestMove;
+    float bestEval = (player == Color::White) ? -100000.0f : 100000.0f;
+
+    for (const auto& entry : legalMoves) {
+        for (const Move& move : entry.second) {
+            // Save state before move
+            MoveState prevState = board.saveStateBeforeMove(move);
+            // Make move
+        
+            board.movePiece(move);
+
+            // Call minimax for new position
+            float eval = minimax(board, depth - 1, (player == Color::White ? Color::Black : Color::White));
+
+            //Undo move
+            board.restoreStateBeforeMove(prevState);
+
+            // Update best move
+            if ((player == Color::White && eval > bestEval) ||
+                (player == Color::Black && eval < bestEval)) {
+                bestEval = eval;
+                bestMove = move;
+            }
+        }
+    }
+    return bestMove;
+}
+

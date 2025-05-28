@@ -1,12 +1,16 @@
 #include <random>
 #include "../Pieces/Color.h"
 #include "../Board/Board.h"
-
+#include "../Pieces/Move.h"
+#include "../Board/MoveState.h"
 class ChessEngine
 {
 public:
 	void makeRandomMove(Board& board, Color player);
 	float evaluateBoard(const Board& board) const;
+    float minimax(Board& board, int depth, Color player);
+    Move findBestMove(Board& board, int depth, Color player);
+
 
 private:
     const float WHITE_PAWN_PREFERRED_COORDINATES[8][8] =
