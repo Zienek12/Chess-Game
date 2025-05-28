@@ -396,3 +396,73 @@ bool Board::isInsufficientMaterial() const
 	}
 	return false;
 }
+
+MoveState Board::saveStateBeforeMove(const Move& move) const
+{
+	MoveState state;
+	state.from = move.from;
+	state.to = move.to;
+	state.movedPiece = getPiece(move.from);
+	state.capturedPiece = getPiece(move.to);
+	state.movedPieceHasMoved = state.movedPiece.hasBeenMoved();
+	state.capturedPieceHasMoved = state.capturedPiece.hasBeenMoved();
+
+	// Castling check
+	if (state.movedPiece.getType() == PieceType::King && std::abs(move.to.x - move.from.x) == 2) {
+		state.isCastling = true;
+		int y = move.from.y;
+		if (move.to.x > move.from.x) {
+			// King side castle
+			state.rookFrom = Position(7, y);
+			state.rookTo = Position(5, y);
+		}
+		else {
+			// Queen castle
+			state.rookFrom = Position(0, y);
+			state.rookTo = Position(3, y);
+		}
+		state.rookPiece = getPiece(state.rookFrom);
+		state.rookHasMoved = state.rookPiece.hasBeenMoved();
+	}
+
+	// Promotion check
+	if (state.movedPiece.getType() == PieceType::Pawn && move.promotionType != PieceType::None) {
+		state.isPromotion = true;
+		state.promotionType = move.promotionType;
+	}
+
+	return state;
+}
+
+void Board::restoreStateBeforeMove(const MoveState& state)
+{
+	// Cofnij promocj? pionka
+	if (state.isPromotion) {
+		// Na polu docelowym by? pionek, wi?c przywracamy pionka
+		squares[state.from.x][state.from.y] = state.movedPiece;
+		squares[state.from.x][state.from.y].setHasMoved(state.movedPieceHasMoved);
+		squares[state.to.x][state.to.y] = state.capturedPiece;
+		squares[state.to.x][state.to.y].setHasMoved(state.capturedPieceHasMoved);
+		return;
+	}
+
+	// Cofnij roszad?
+	if (state.isCastling) {
+		// Przywró? króla
+		squares[state.from.x][state.from.y] = state.movedPiece;
+		squares[state.from.x][state.from.y].setHasMoved(state.movedPieceHasMoved);
+		// Przywró? wie??
+		squares[state.rookFrom.x][state.rookFrom.y] = state.rookPiece;
+		squares[state.rookFrom.x][state.rookFrom.y].setHasMoved(state.rookHasMoved);
+		// Usu? króla i wie?? z pól docelowych
+		squares[state.to.x][state.to.y] = Piece(PieceType::None, Color::None);
+		squares[state.rookTo.x][state.rookTo.y] = Piece(PieceType::None, Color::None);
+		return;
+	}
+
+	// Standardowy ruch (w tym bicie)
+	squares[state.from.x][state.from.y] = state.movedPiece;
+	squares[state.from.x][state.from.y].setHasMoved(state.movedPieceHasMoved);
+	squares[state.to.x][state.to.y] = state.capturedPiece;
+	squares[state.to.x][state.to.y].setHasMoved(state.capturedPieceHasMoved);
+}
