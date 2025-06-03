@@ -10,9 +10,15 @@ public:
 	float evaluateBoard(const Board& board) const;
     float minimax(Board& board, int depth, Color player);
     Move findBestMove(Board& board, int depth, Color player);
+    Move findBestMoveAlphaBeta(Board& board, int depth, Color player);
+    float minimaxAlphaBeta(Board& board, int depth, Color player, float alpha, float beta);
+    size_t getNodesVisited() const { return nodesVisited; }
 
+protected:
+    size_t nodesVisited = 0;
 
 private:
+
     const float WHITE_PAWN_PREFERRED_COORDINATES[8][8] =
     {
             0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,
