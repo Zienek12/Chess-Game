@@ -9,11 +9,11 @@ class BoardRenderer
 {
 public:
 	BoardRenderer(float squareSize = 100.f);
-	void draw(sf::RenderWindow& window, const Board& board);
+	void draw(sf::RenderWindow& window, const Board& board, 
+		std::optional<Position> selectedSquare, const std::vector<Position>& highlightedMoves);
 private:
 	float squareSize;
-	sf::Font font;
-	bool fontLoaded = false;
+
 	std::map<std::string, sf::Texture> pieceTextures;
 
 	void loadTextures();
