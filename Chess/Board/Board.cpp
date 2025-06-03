@@ -10,6 +10,9 @@
 #include <cctype>
 #include <algorithm>
 #include <vector>
+
+Board::Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR") {}
+
 const Piece& Board::getPiece(const Position& pos)const {
 	if (!pos.isValid())
 	{
@@ -190,14 +193,14 @@ void Board::makeMoveNoValidation(const Position& from, const Position& to)
 
 //uses map with all legal moves it checs if move that player inputed is in the map
 //if it is move is made
-void Board::movePiece(const Move& move)
+bool Board::movePiece(const Move& move)
 {
 	if (!move.from.isValid() || !move.to.isValid())
-		return;
+		return 0;
 
 	const Piece& piece = getPiece(move.from);
 	if (piece.getType() == PieceType::None)
-		return;
+		return 0;
 
 	auto allMoves = getAllLegalMoves(piece.getColor());
 	auto it = allMoves.find(move.from);
@@ -235,14 +238,16 @@ void Board::movePiece(const Move& move)
 			{
 				squares[move.to.x][move.to.y] = Piece(move.promotionType, piece.getColor(), true);
 				removePiece(move.from);
-				return;
+				return 0;
 			}
 
 			squares[move.to.x][move.to.y] = squares[move.from.x][move.from.y];
 			squares[move.to.x][move.to.y].setHasMoved(true);
 			removePiece(move.from);
+			return true;
 		}
 	}
+	return false;
 }
 
 bool Board::isSquareAttacked(const Position& pos, Color color) const
