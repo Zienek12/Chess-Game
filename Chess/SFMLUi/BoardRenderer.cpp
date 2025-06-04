@@ -58,7 +58,8 @@ std::string BoardRenderer::getPieceTextureKey(const Piece& piece) const {
 
 
 void BoardRenderer::draw(sf::RenderWindow& window, const Board& board, 
-    std::optional<Position> selectedSquare,const std::vector<Position>& highlightedMoves) {
+    std::optional<Position> selectedSquare,const std::vector<Position>& highlightedMoves,
+    const std::optional<Position> kingInCheckPos) {
     // Draw the chessboard and pieces
     for (int x = 0; x < 8; ++x) {
         for (int y = 0; y < 8; ++y) {
@@ -104,7 +105,14 @@ void BoardRenderer::draw(sf::RenderWindow& window, const Board& board,
                     window.draw(moveHighlight);
                 }
             }
+          
 
         }
+    }
+    if (kingInCheckPos) {
+        sf::RectangleShape highlight(sf::Vector2f(squareSize, squareSize));
+        highlight.setPosition(sf::Vector2f(kingInCheckPos->x * squareSize, (7 - kingInCheckPos->y) * squareSize));
+        highlight.setFillColor(sf::Color(255, 0, 0, 100)); // semi-transparent red
+        window.draw(highlight);
     }
 }
