@@ -1,3 +1,4 @@
+#pragma once
 #include <random>
 #include "../Pieces/Color.h"
 #include "../Board/Board.h"
