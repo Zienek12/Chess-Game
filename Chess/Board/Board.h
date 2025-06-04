@@ -5,6 +5,7 @@
 #include <string>
 #include <stdexcept>
 #include <map>
+#include <optional>
 #include "../Pieces/Move.h"
 #include "MoveState.h"
 class Board
@@ -28,7 +29,7 @@ public:
     std::map<Position, std::vector<Move>> getAllLegalMoves(Color color) const;
     bool isSquareAttacked(const Position& pos, Color color) const;
 
-    Position findKingPos(Color player) const;
+    std::optional<Position> findKingPos(Color player) const;
     bool isKingInCheck(Color color) const;
 
     bool isInsufficientMaterial() const;

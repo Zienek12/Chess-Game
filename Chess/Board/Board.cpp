@@ -337,7 +337,7 @@ bool Board::isSquareAttacked(const Position& pos, Color color) const
 	return false;
 }
 
-Position Board::findKingPos(Color player) const
+std::optional<Position> Board::findKingPos(Color player) const
 {
 	for (int x = 0; x < 8; ++x)
 	{
@@ -345,16 +345,16 @@ Position Board::findKingPos(Color player) const
 		{
 			if (getPiece(Position(x, y)).getType() == PieceType::King && getPiece(Position(x, y)).getColor() == player)
 			{
-				return(Position(x, y));
+				return Position(x, y);
 			}
 		}
 	}
-	return Position(-1, -1);
+	return std::nullopt; 
 }
 
 bool Board::isKingInCheck(Color player) const
 {
-	return isSquareAttacked(findKingPos(player), player);
+	return isSquareAttacked(*findKingPos(player), player);
 }
 
 bool Board::isInsufficientMaterial() const
