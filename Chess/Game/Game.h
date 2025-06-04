@@ -14,8 +14,8 @@ protected:
 public:
 	int counter = 1;
 	Color currentPlayer = Color::White;
-	Color playerColor = Color::None;
-	Color aiColor = Color::None;
+	Color playerColor = Color::White;
+	Color aiColor = Color::Black;
 	Board initializeGame(const std::string& fen);
 	void gameLoop(Board& board);
 	bool isGameCompleted(const Board& board) const;

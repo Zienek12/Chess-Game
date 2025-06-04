@@ -59,10 +59,13 @@ void Game::gameLoop(Board& board)
     if (currentPlayer == aiColor) {
         board.movePiece(engine.findBestMove(board, 3, aiColor));
         currentPlayer = playerColor;
+
+        std::cout << "\n\nOdwiedzone wezly zwykly: " << engine.getNodesVisited() << std::endl;
         std::cout << "\n" << counter<<"\n";
         counter++;
         std::cout << engine.evaluateBoard(board) << "\n";
-        Sleep(1000);
+
+        system("pause");
 
         system("cls");
         return;
@@ -72,13 +75,15 @@ void Game::gameLoop(Board& board)
     //Comment player move section if this is wanted
     
     if (currentPlayer == playerColor) {
-        board.movePiece(engine.findBestMove(board, 3, playerColor));
+        board.movePiece(engine.findBestMoveAlphaBeta(board, 3, playerColor));
         currentPlayer = aiColor;
+        std::cout << "\n\nOdwiedzone wezly alfa beta: " << engine.getNodesVisited() << std::endl;
+
         std::cout << "\n" << counter << "\n";
         counter++;
         std::cout << engine.evaluateBoard(board) << "\n";
-        Sleep(1000);
 
+        system("pause");
         system("cls");
         return;
     }
