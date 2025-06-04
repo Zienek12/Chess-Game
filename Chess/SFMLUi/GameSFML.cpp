@@ -9,7 +9,7 @@ GameSFML::GameSFML()
     window(sf::VideoMode({ 800, 800 }), "Chess"),
     squareSize(100.0f)
 {
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(30);
 }
 
 // Checks if the game has ended (checkmate, stalemate, or insufficient material)
@@ -36,6 +36,38 @@ bool GameSFML::isGameCompleted() {
     }
     return false;
 }
+
+void GameSFML::drawColorSelection(sf::RenderWindow& window, sf::Font& font) {
+    sf::Text title(font);
+    title.setString("Choose player color");
+    title.setFillColor(sf::Color::White);
+    title.setPosition(sf::Vector2f(180, 150));
+
+    sf::RectangleShape whiteButton(sf::Vector2f(200, 80));
+    whiteButton.setPosition(sf::Vector2f(150, 350));
+    whiteButton.setFillColor(sf::Color(220, 220, 220));
+
+    sf::Text whiteText(font);
+    whiteText.setString("White");
+    whiteText.setFillColor(sf::Color::Black);
+    whiteText.setPosition(sf::Vector2f(whiteButton.getPosition().x + 50, whiteButton.getPosition().y + 15));
+
+    sf::RectangleShape blackButton(sf::Vector2f(200, 80));
+    blackButton.setPosition(sf::Vector2f(450, 350));
+    blackButton.setFillColor(sf::Color(50, 50, 50));
+    sf::Text blackText(font);
+    blackText.setString("Black");
+    blackText.setFillColor(sf::Color::White);
+    blackText.setPosition(sf::Vector2f(blackButton.getPosition().x + 40, blackButton.getPosition().y + 15));
+
+    this->window.draw(title); // Use this-> to refer to the class member
+    this->window.draw(whiteButton);
+    this->window.draw(whiteText);
+    this->window.draw(blackButton);
+    this->window.draw(blackText);
+}
+
+
 
 void GameSFML::playerTurn()
 {
@@ -123,7 +155,6 @@ void GameSFML::playerTurn()
 
 // Main game loop
 void GameSFML::run() {
-    console.displayBoard(board, currentPlayer);
     sf::Font font;
     // Load font for displaying end game messages
     if (!font.openFromFile("../../../../Chess/Assets/arial.ttf")) {
@@ -131,8 +162,59 @@ void GameSFML::run() {
         return;
     }
 
+    console.displayBoard(board, currentPlayer);
+   
+
     while (window.isOpen()) {
         // Check if the game has ended
+        if (!colorSelectionDone) {
+            // Rysuj i obs?uguj wybór koloru
+            window.clear();
+            drawColorSelection(window, font);
+            window.display();
+
+            // Tylko obs?uga zdarze? wyboru koloru
+            while (const std::optional event = window.pollEvent()) {
+                if (event->is<sf::Event::Closed>()) {
+                    window.close();
+                    break;
+                }
+
+                if (event->is<sf::Event::MouseButtonPressed>()) {
+                    auto mousePos = sf::Mouse::getPosition(window);
+                    auto mousePosF = sf::Vector2f(mousePos);
+
+                    sf::FloatRect whiteButtonRect({ 150.f, 350.f }, { 200.f, 80.f });
+                    sf::FloatRect blackButtonRect({ 450.f, 350.f }, { 200.f, 80.f });
+
+                    if (whiteButtonRect.contains(mousePosF)) {
+                        // white is chosen
+                        playerColor = Color::White;
+                        aiColor = Color::Black;
+                        currentPlayer = Color::White;
+                        colorSelectionDone = true;
+                        break;
+                    }
+                    else if (blackButtonRect.contains(mousePosF)) {
+                        // black is chosen
+                        playerColor = Color::Black;
+                        aiColor = Color::White;
+                        currentPlayer = Color::White;
+                        colorSelectionDone = true;
+                        break;
+                    }
+                }
+            }
+            continue;  
+        }
+
+
+
+
+
+
+
+
         if (!gameEnded) {
             isGameCompleted();
         }

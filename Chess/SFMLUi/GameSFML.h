@@ -13,6 +13,8 @@ public:
     void run();
     void playerTurn();
     bool isGameCompleted();
+    void drawColorSelection(sf::RenderWindow& window, sf::Font& font);
+
 
 private:
     sf::RenderWindow window;
@@ -26,7 +28,6 @@ private:
     std::string endMessage;
     bool gameEnded = false;
     std::optional<Position> kingInCheckPos;
-
     ChessEngine engine;
-
+    bool colorSelectionDone = false;
 };
