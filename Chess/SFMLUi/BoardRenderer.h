@@ -10,7 +10,8 @@ class BoardRenderer
 public:
 	BoardRenderer(float squareSize = 100.f);
 	void draw(sf::RenderWindow& window, const Board& board, 
-		std::optional<Position> selectedSquare, const std::vector<Position>& highlightedMoves,
+		std::optional<Position> selectedSquare, 
+		const std::vector<Position>& highlightedMoves,
 		const std::optional<Position> kingInCheckPos);
 private:
 	float squareSize;

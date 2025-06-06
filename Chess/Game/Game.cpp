@@ -1,13 +1,17 @@
 #include "Game.h"
 
+// Initializes the game board from a FEN string and asks the player to choose a color.
+// Sets playerColor and aiColor accordingly.
 Board Game::initializeGame(const std::string& fen)
 {
-	Board board(fen);
+    Board board(fen);
     ConsoleUi console;
     this->playerColor = console.askPlayerColor();
     this->aiColor = (playerColor == Color::White) ? Color::Black : Color::White;
     return board;
 }
+
+// Checks if a move is legal for the given player, including promotion.
 bool Game::isMoveLegal(const Board& board, const Position& from, const Position& to, Color player, PieceType promotionType) const
 {
     auto legalMoves = board.getAllLegalMoves(player);
@@ -21,102 +25,95 @@ bool Game::isMoveLegal(const Board& board, const Position& from, const Position&
     return false;
 }
 
+// Checks if the game is completed (checkmate, stalemate, or insufficient material).
+// Prints the result and pauses if the game is over.
 bool Game::isGameCompleted(const Board& board) const
 {
-
     if (board.isKingInCheck(currentPlayer) &&
         board.getAllLegalMoves(currentPlayer).empty()) {
-        std::cout << "Check mate " << (currentPlayer == Color::White ? "Black" : "White") << " Wins\n";
+        std::cout << "Checkmate! " << (currentPlayer == Color::White ? "Black" : "White") << " wins.\n";
         system("pause");
-        return 1;
+        return true;
     }
     if (!board.isKingInCheck(currentPlayer) &&
         board.getAllLegalMoves(currentPlayer).empty()) {
         std::cout << "Stalemate! Draw.\n";
         system("pause");
-        return 1;
+        return true;
     }
     if (board.isInsufficientMaterial()) {
         std::cout << "Draw! Insufficient material.\n";
         system("pause");
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-
+// Main game loop: alternates between player and computer moves, displays the board, and checks for game end.
 void Game::gameLoop(Board& board)
 {
     ConsoleUi console;
     ChessEngine engine;
-    console.displayBoard(board, currentPlayer);
-    if (isGameCompleted(board))
-    { 
-        std::cout << "\n" << counter;
-        exit(0);
-    }
-    //Ai move
-    if (currentPlayer == aiColor) {
-        board.movePiece(engine.findBestMove(board, 3, aiColor));
-        currentPlayer = playerColor;
 
-        std::cout << "\n\nOdwiedzone wezly zwykly: " << engine.getNodesVisited() << std::endl;
-        std::cout << "\n" << counter<<"\n";
-        counter++;
-        std::cout << engine.evaluateBoard(board) << "\n";
+    while (true) {
+        // Display the board and current player
+        console.displayBoard(board, currentPlayer);
 
-        system("pause");
+        // Check for game end
+        if (isGameCompleted(board)) {
+            std::cout << "\nMoves played: " << counter << "\n";
+            exit(0);
+        }
+
+        // Computer (AI) move
+        if (currentPlayer == aiColor) {
+            Move aiMove = engine.findBestMove(board, 3, aiColor);
+            board.movePiece(aiMove);
+
+            std::cout << "\nAI move: " << char('a' + aiMove.from.x) << (aiMove.from.y + 1)
+                << " -> " << char('a' + aiMove.to.x) << (aiMove.to.y + 1) << "\n";
+            std::cout << "Nodes visited: " << engine.getNodesVisited() << "\n";
+            std::cout << "Board evaluation: " << engine.evaluateBoard(board) << "\n";
+            counter++;
+            currentPlayer = playerColor;
+
+            system("pause");
+            system("cls");
+            continue;
+        }
+
+        // Player move
+        HandlePlayerInput inputHandler;
+        PlayerMove move = inputHandler.getPlayerMove();
+        std::vector<Position> positions = inputHandler.translatePlayerMove(move);
+
+        if (positions.size() < 2) {
+            std::cout << "Invalid input. Try again.\n";
+            system("pause");
+            system("cls");
+            continue;
+        }
+
+        Piece movedPiece = board.getPiece(positions[0]);
+        bool isPromotion = (movedPiece.getType() == PieceType::Pawn) &&
+            ((movedPiece.getColor() == Color::White && positions[1].y == 7) ||
+                (movedPiece.getColor() == Color::Black && positions[1].y == 0));
+
+        PieceType promotionType = PieceType::None;
+        if (isPromotion) {
+            promotionType = console.askPromotionChoice();
+        }
+
+        if (isMoveLegal(board, positions[0], positions[1], currentPlayer, promotionType)) {
+            board.movePiece(Move(positions[0], positions[1], promotionType));
+            currentPlayer = aiColor;
+            counter++;
+        }
+        else {
+            std::cout << "Incorrect move, try again!\n";
+            system("pause");
+        }
 
         system("cls");
-        return;
     }
-
-    //To watch how computer vs computer plays
-    //Comment player move section if this is wanted
-    
-    if (currentPlayer == playerColor) {
-        board.movePiece(engine.findBestMoveAlphaBeta(board, 3, playerColor));
-        currentPlayer = aiColor;
-        std::cout << "\n\nOdwiedzone wezly alfa beta: " << engine.getNodesVisited() << std::endl;
-
-        std::cout << "\n" << counter << "\n";
-        counter++;
-        std::cout << engine.evaluateBoard(board) << "\n";
-
-        system("pause");
-        system("cls");
-        return;
-    }
-    
-
-    /*
-    //player move
-    HandlePlayerInput inputHandler;
-    PlayerMove move = inputHandler.getPlayerMove();
-    std::vector<Position> Positions = inputHandler.translatePlayerMove(move);
-
-    Piece movedPiece = board.getPiece(Positions[0]);
-    bool isPromotion = (movedPiece.getType() == PieceType::Pawn) &&
-        ((movedPiece.getColor() == Color::White && Positions[1].y == 7) ||
-            (movedPiece.getColor() == Color::Black && Positions[1].y == 0));
-
-    PieceType promotionType = PieceType::None;
-
-    if (isPromotion) {
-
-        promotionType = console.askPromotionChoice();
-    }
-
-    if (isMoveLegal(board, Positions[0], Positions[1], currentPlayer, promotionType)) {
-        board.movePiece(Move(Positions[0], Positions[1], promotionType));
-        this->currentPlayer = (this->currentPlayer == Color::White) ? Color::Black : Color::White;
-    }
-    else {
-        std::cout << "Incorrect move try again!\n";
-        system("pause");
-    }
-    
-    system("cls");
-    */
-
 }
