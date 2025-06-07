@@ -46,4 +46,6 @@ private:
     std::optional<Position> kingInCheckPos;     // Position of the king in check (if any)
     ChessEngine engine;                         // Chess engine for AI moves
     bool colorSelectionDone = false;            // True if player color has been selected
+    bool aiMoveAfterColorSelectionDone = false; // True if player color is black and AI made its first move
+
 };

@@ -307,6 +307,18 @@ void GameSFML::run()
             }
             continue;
         }
+        if (colorSelectionDone && playerColor == Color::Black && !aiMoveAfterColorSelectionDone)
+        {
+            window.clear();
+            renderer.draw(window, board, selectedSquare, highlightedMoves, kingInCheckPos);
+            window.display();
+
+            board.movePiece(engine.findBestMoveAlphaBeta(board, 3, aiColor));
+            currentPlayer = playerColor; 
+            aiMoveAfterColorSelectionDone = true;
+            continue;
+
+        }
 
         // Check if the game has ended
         if (!gameEnded)
