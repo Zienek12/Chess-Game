@@ -14,6 +14,11 @@
 // Default constructor: initializes the board with the standard chess starting position
 Board::Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR") {}
 
+
+// Mate in one for white player
+//Board::Board() : Board("Q2bRBNN/K1kqRpp1/p1Prp3/p1pp4/6P1/5PP1/2P1Pp2/7n") {}
+
+
 // Returns a reference to the piece at the given position.
 // If the position is invalid, returns a static empty piece.
 const Piece& Board::getPiece(const Position& pos)const {
