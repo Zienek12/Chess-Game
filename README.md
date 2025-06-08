@@ -12,7 +12,7 @@ The goal of this project is to create a simple chess game with a graphical user 
 - CMake (recommended version 3.20 or newer)
 - Ninja
 - C++20 compatible compiler
-- SFML 3 (Graphics, System, Window)
+- SFML 3.0.0 (Graphics, System, Window)
 
 ## Building the Project
 
