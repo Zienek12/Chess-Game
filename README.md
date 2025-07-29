@@ -16,16 +16,8 @@ The goal of this project is to create a simple chess game with a graphical user 
 
 ## Building the Project
 
-In the main project directory, run the following commands:
-
-cmake -S . -B build -G Ninja cmake --build build
-
 
 ## Running
-
-After building, run the executable from the `build` directory:
-
-./build/Chess
 
 
 The game is controlled using the mouse.
