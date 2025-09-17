@@ -31,8 +31,8 @@ endif()
 
 
 
-add_executable(Tests "tester.cpp")
-target_link_libraries(Tests PRIVATE ChessLib gtest_main )
+add_executable(Tests "Tests/StandardBoardTests.cpp" "Tests/MockTests.cpp")
+target_link_libraries(Tests PRIVATE ChessLib GTest::gtest_main GTest::gmock_main)
 
 
 include(FetchContent)
