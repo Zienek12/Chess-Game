@@ -44,10 +44,10 @@ public:
     // Returns a map of all legal moves for the given color.
     std::map<Position, std::vector<Move>> getAllLegalMoves(Color color) const;
     // Checks if a square is attacked by the opponent.
-    bool isSquareAttacked(const Position& pos, Color color) const;
+    virtual bool isSquareAttacked(const Position& pos, Color color) const;
 
     // Finds the position of the king for the given player color.
-    std::optional<Position> findKingPos(Color player) const;
+    virtual std::optional<Position> findKingPos(Color player) const;
     // Checks if the king of the given color is in check.
     bool isKingInCheck(Color color) const;
 
@@ -58,4 +58,6 @@ public:
     MoveState saveStateBeforeMove(const Move& move) const;
     // Restores the board to the state before a move (undoes a move).
     void restoreStateBeforeMove(const MoveState& state);
+
+    virtual ~Board() = default;
 };
