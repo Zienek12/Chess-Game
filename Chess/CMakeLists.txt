@@ -31,7 +31,7 @@ endif()
 
 
 
-add_executable(Tests "Tests/StandardBoardTests.cpp" "Tests/MockTests.cpp")
+add_executable(Tests "Tests/StandardBoardTests.cpp" "Tests/MockTests.cpp" "Tests/ParametrialTests.cpp")
 target_link_libraries(Tests PRIVATE ChessLib GTest::gtest_main GTest::gmock_main)
 
 
